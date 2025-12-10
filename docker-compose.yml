@@ -1,0 +1,34 @@
+﻿services:
+  api:
+    container_name: portal-tcmsp-api
+    image: tcmspacr.azurecr.io/portal-tcmsp-api  # ← nome da imagem no ACR (apontamento)
+    build:
+      context: .
+      dockerfile: PortalTCMSP.Api/Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=portal_tcmsp;Username=postgres;Password=apppass"
+    networks:
+      - rede-privada
+  postgres:
+    image: postgres:15
+    container_name: portal-tcmsp-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: MinhaSenha123
+      POSTGRES_DB: PortalTCMSP
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - rede-privada
+networks:
+  rede-privada:
+    driver: bridge
+volumes:
+  pgdata:
